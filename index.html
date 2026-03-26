@@ -3,69 +3,84 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Business Vocab Pro</title>
+    <title>Business Vocab Master</title>
     <style>
-        :root { --primary: #007bff; --success: #28a745; --bg: #f8f9fa; --error: #dc3545; }
+        :root { --primary: #007bff; --success: #28a745; --bg: #f8f9fa; }
         body { font-family: 'Segoe UI', sans-serif; background: var(--bg); display: flex; flex-direction: column; align-items: center; padding: 20px; }
         
+        /* Header & Selector */
+        .header { text-align: center; margin-bottom: 20px; width: 100%; max-width: 400px; }
+        select { width: 100%; padding: 10px; border-radius: 10px; border: 2px solid var(--primary); font-size: 16px; margin-top: 10px; }
+
         /* Navigation */
-        .nav { margin-bottom: 20px; display: flex; gap: 10px; }
-        .nav button { background: #ddd; color: #333; box-shadow: none; }
+        .nav { margin: 20px 0; display: flex; gap: 10px; }
+        .nav button { background: #ddd; color: #333; border-radius: 20px; padding: 8px 20px; cursor: pointer; border: none; font-weight: bold; }
         .nav button.active { background: var(--primary); color: white; }
 
-        /* General Styles */
+        /* Modes */
         .hidden { display: none !important; }
-        .card-container { width: 90vw; max-width: 400px; height: 280px; perspective: 1000px; margin-bottom: 20px; cursor: pointer; }
+        
+        /* Flashcards */
+        .card-container { width: 90vw; max-width: 400px; height: 280px; perspective: 1000px; cursor: pointer; margin-bottom: 15px; }
         .card-inner { position: relative; width: 100%; height: 100%; text-align: center; transition: transform 0.6s; transform-style: preserve-3d; }
         .is-flipped { transform: rotateY(180deg); }
         .card-front, .card-back {
             position: absolute; width: 100%; height: 100%; backface-visibility: hidden;
             display: flex; align-items: center; justify-content: center;
-            padding: 30px; border-radius: 20px; box-shadow: 0 8px 16px rgba(0,0,0,0.1); box-sizing: border-box;
+            padding: 30px; border-radius: 20px; box-shadow: 0 8px 16px rgba(0,0,0,0.1); box-sizing: border-box; border: 2px solid #fff;
         }
-        .card-front { background: white; color: var(--primary); font-size: 28px; font-weight: bold; border: 2px solid var(--primary); }
+        .card-front { background: white; color: var(--primary); font-size: 28px; font-weight: bold; }
         .card-back { background: var(--primary); color: white; transform: rotateY(180deg); font-size: 20px; }
 
-        /* Matching Game Grid */
+        /* Matching Grid */
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; max-width: 500px; width: 100%; }
-        .tile {
-            padding: 15px; background: white; border: 2px solid #ddd; border-radius: 10px;
-            cursor: pointer; text-align: center; font-size: 14px; transition: 0.2s;
-            display: flex; align-items: center; justify-content: center; min-height: 60px;
-        }
+        .tile { padding: 15px; background: white; border: 2px solid #ddd; border-radius: 10px; cursor: pointer; text-align: center; font-size: 14px; min-height: 60px; display: flex; align-items: center; justify-content: center; }
         .tile.selected { border-color: var(--primary); background: #e7f1ff; }
         .tile.matched { visibility: hidden; pointer-events: none; }
 
-        button { padding: 12px 24px; border: none; border-radius: 30px; font-weight: bold; cursor: pointer; transition: 0.2s; background: var(--primary); color: white; }
+        .main-btn { padding: 12px 24px; border: none; border-radius: 30px; background: var(--primary); color: white; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
 
+    <div class="header">
+        <h1>Vocab Master</h1>
+        <label for="lesson-select">Choose Lesson:</label>
+        <select id="lesson-select" onchange="changeLesson(this.value)">
+            <option>Loading Lessons...</option>
+        </select>
+    </div>
+
     <div class="nav">
         <button id="btn-flash" class="active" onclick="showMode('flash')">Flashcards</button>
-        <button id="btn-match" onclick="showMode('match')">Matching Game</button>
+        <button id="btn-match" onclick="showMode('match')">Matching</button>
     </div>
 
     <div id="flash-mode">
         <div class="card-container" onclick="flipCard()">
             <div class="card-inner" id="flashcard">
-                <div class="card-front" id="word-display">Loading...</div>
+                <div class="card-front" id="word-display">Select a lesson</div>
                 <div class="card-back" id="definition-display">...</div>
             </div>
         </div>
-        <button onclick="nextWord()">Next Word →</button>
+        <div style="text-align:center">
+            <button class="main-btn" onclick="nextWord()">Next Word →</button>
+        </div>
     </div>
 
     <div id="match-mode" class="hidden">
-        <h3>Match the pairs!</h3>
         <div class="grid" id="game-grid"></div>
-        <button onclick="setupMatchingGame()" style="margin-top:20px; background:#6c757d;">Reset Game</button>
+        <div style="text-align:center; margin-top:20px;">
+            <button onclick="setupMatchingGame()" style="background:#6c757d; border:none; color:white; padding:10px 20px; border-radius:20px; cursor:pointer;">Restart Game</button>
+        </div>
     </div>
 
     <script>
         const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS--AB3xRXgEY6Pw6_KCz43YUo2cbBZskowBoUNZ7ruPS9N2dAT-4fvDaJPYGllWWNjSSfMZ4VspCGU/pub?output=csv";
-        let vocab = [];
-        let index = 0;
+        
+        let allData = {}; // This will hold: { "Lesson 1": [words], "Lesson 2": [words] }
+        let currentLesson = "";
+        let currentIndex = 0;
         let selectedTile = null;
 
         async function init() {
@@ -73,16 +88,46 @@
                 const res = await fetch(sheetURL);
                 const text = await res.text();
                 const rows = text.split(/\r?\n/);
-                vocab = rows.map(r => {
-                    const c = r.split(",");
-                    return { term: c[0]?.trim(), def: c[1]?.trim() };
-                }).filter(i => i.term && i.def && i.term.toLowerCase() !== "term");
                 
-                updateFlashcard();
-            } catch (e) { console.error(e); }
+                // Organize data into Lessons
+                rows.forEach((row, i) => {
+                    if (i === 0) return; // Skip header
+                    const cols = row.split(",");
+                    if (cols.length >= 2) {
+                        const term = cols[0].trim();
+                        const def = cols[1].trim();
+                        const category = cols[2] ? cols[2].trim() : "General";
+
+                        if (!allData[category]) allData[category] = [];
+                        allData[category].push({ term, def });
+                    }
+                });
+
+                populateDropdown();
+            } catch (e) { console.error("Error loading data", e); }
         }
 
-        // MODE SWITCHING
+        function populateDropdown() {
+            const select = document.getElementById('lesson-select');
+            select.innerHTML = "";
+            Object.keys(allData).forEach(lesson => {
+                const opt = document.createElement('option');
+                opt.value = lesson;
+                opt.innerText = lesson;
+                select.appendChild(opt);
+            });
+            changeLesson(Object.keys(allData)[0]);
+        }
+
+        function changeLesson(name) {
+            currentLesson = name;
+            currentIndex = 0;
+            updateFlashcard();
+            if (!document.getElementById('match-mode').classList.contains('hidden')) {
+                setupMatchingGame();
+            }
+        }
+
         function showMode(mode) {
             document.getElementById('flash-mode').classList.toggle('hidden', mode !== 'flash');
             document.getElementById('match-mode').classList.toggle('hidden', mode !== 'match');
@@ -94,66 +139,52 @@
         // FLASHCARD LOGIC
         function flipCard() { document.getElementById('flashcard').classList.toggle('is-flipped'); }
         function nextWord() {
-            index = (index + 1) % vocab.length;
+            currentIndex = (currentIndex + 1) % allData[currentLesson].length;
             updateFlashcard();
         }
         function updateFlashcard() {
             document.getElementById('flashcard').classList.remove('is-flipped');
             setTimeout(() => {
-                document.getElementById('word-display').innerText = vocab[index].term;
-                document.getElementById('definition-display').innerText = vocab[index].def;
+                const item = allData[currentLesson][currentIndex];
+                document.getElementById('word-display').innerText = item.term;
+                document.getElementById('definition-display').innerText = item.def;
             }, 200);
         }
 
-        // MATCHING GAME LOGIC
+        // MATCHING LOGIC
         function setupMatchingGame() {
             const grid = document.getElementById('game-grid');
             grid.innerHTML = '';
             selectedTile = null;
-
-            // Take 4 random words
-            let pool = [...vocab].sort(() => 0.5 - Math.random()).slice(0, 4);
+            
+            let pool = [...allData[currentLesson]].sort(() => 0.5 - Math.random()).slice(0, 4);
             let tiles = [];
-
             pool.forEach((item, i) => {
-                tiles.push({ text: item.term, pairId: i, type: 'term' });
-                tiles.push({ text: item.def, pairId: i, type: 'def' });
+                tiles.push({ text: item.term, id: i, type: 't' });
+                tiles.push({ text: item.def, id: i, type: 'd' });
             });
-
             tiles.sort(() => 0.5 - Math.random());
 
-            tiles.forEach(tileData => {
+            tiles.forEach(data => {
                 const div = document.createElement('div');
                 div.className = 'tile';
-                div.innerText = tileData.text;
-                div.onclick = () => handleTileClick(div, tileData);
+                div.innerText = data.text;
+                div.onclick = () => {
+                    if (div.classList.contains('matched')) return;
+                    if (!selectedTile) {
+                        selectedTile = { div, data };
+                        div.classList.add('selected');
+                    } else {
+                        if (selectedTile.data.id === data.id && selectedTile.data.type !== data.type) {
+                            div.classList.add('matched');
+                            selectedTile.div.classList.add('matched');
+                        }
+                        selectedTile.div.classList.remove('selected');
+                        selectedTile = null;
+                    }
+                };
                 grid.appendChild(div);
             });
-        }
-
-        function handleTileClick(div, data) {
-            if (div.classList.contains('matched')) return;
-
-            if (!selectedTile) {
-                selectedTile = { div, data };
-                div.classList.add('selected');
-            } else {
-                if (selectedTile.div === div) {
-                    div.classList.remove('selected');
-                    selectedTile = null;
-                    return;
-                }
-
-                if (selectedTile.data.pairId === data.pairId && selectedTile.data.type !== data.type) {
-                    // It's a match!
-                    div.classList.add('matched');
-                    selectedTile.div.classList.add('matched');
-                } else {
-                    // Not a match
-                    selectedTile.div.classList.remove('selected');
-                }
-                selectedTile = null;
-            }
         }
 
         init();
