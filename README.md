@@ -1,1 +1,1 @@
-# vocab-app
+# make-it-stick-app
