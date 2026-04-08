@@ -6,97 +6,85 @@
     <title>Vocab Master Pro</title>
     <style>
         :root { --primary: #007bff; --success: #28a745; --bg: #f8f9fa; --dark: #343a40; --secondary: #6c757d; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); display: flex; flex-direction: column; align-items: center; padding: 20px; margin: 0; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); display: flex; flex-direction: column; align-items: center; padding: 10px; margin: 0; }
         
         /* LOGIN OVERLAY */
-        #login-overlay {
-            position: fixed; top:0; left:0; width:100%; height:100%; background: var(--primary);
-            display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 1000; color: white;
-        }
-        .login-box { background: white; padding: 30px; border-radius: 15px; color: var(--dark); width: 80%; max-width: 300px; text-align: center; }
-        .login-box input { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
+        #login-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: var(--primary); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 1000; color: white; }
+        .login-box { background: white; padding: 30px; border-radius: 15px; color: var(--dark); width: 85%; max-width: 320px; text-align: center; }
+        .login-box input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; }
 
-        /* HEADER & STATS */
-        .setup-area { background: white; padding: 15px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); width: 90%; max-width: 400px; margin-bottom: 15px; text-align: center; }
+        /* SETUP & NAV */
+        .setup-area { background: white; padding: 15px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); width: 95%; max-width: 450px; margin-bottom: 15px; text-align: center; }
         select { width: 100%; padding: 10px; border-radius: 8px; border: 2px solid var(--primary); font-size: 16px; margin-top: 5px; cursor: pointer; }
-        .stats-text { font-size: 13px; color: #666; margin-top: 10px; font-weight: bold; }
-
-        .nav { margin-bottom: 15px; display: flex; gap: 8px; }
-        .nav button { background: #dee2e6; color: var(--dark); border-radius: 20px; padding: 8px 18px; cursor: pointer; border: none; font-weight: bold; }
+        .nav { margin-bottom: 15px; display: flex; gap: 5px; flex-wrap: wrap; justify-content: center; }
+        .nav button { background: #dee2e6; color: var(--dark); border-radius: 20px; padding: 8px 14px; cursor: pointer; border: none; font-weight: bold; font-size: 12px; }
         .nav button.active { background: var(--primary); color: white; }
 
         .hidden { display: none !important; }
         
-        /* FLASHCARD */
+        /* CARD STYLES */
         .card-container { width: 90vw; max-width: 400px; height: 260px; perspective: 1000px; cursor: pointer; margin-bottom: 15px; }
         .card-inner { position: relative; width: 100%; height: 100%; text-align: center; transition: transform 0.6s; transform-style: preserve-3d; }
         .is-flipped { transform: rotateY(180deg); }
-        .card-front, .card-back {
-            position: absolute; width: 100%; height: 100%; backface-visibility: hidden;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            padding: 25px; border-radius: 15px; box-shadow: 0 6px 12px rgba(0,0,0,0.1); border: 2px solid #fff; box-sizing: border-box;
-        }
+        .card-front, .card-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 25px; border-radius: 15px; box-shadow: 0 6px 12px rgba(0,0,0,0.1); border: 2px solid #fff; box-sizing: border-box; }
         .card-front { background: white; color: var(--primary); font-size: 26px; font-weight: bold; }
-        .card-back { background: var(--primary); color: white; transform: rotateY(180deg); font-size: 18px; text-align: center; }
-        
-        .speaker-btn { background: #eee; border: none; border-radius: 50%; width: 40px; height: 40px; cursor: pointer; margin-top: 15px; font-size: 20px; }
+        .card-back { background: var(--primary); color: white; transform: rotateY(180deg); font-size: 18px; }
 
-        /* BUTTONS */
+        /* SENTENCE TASKS */
+        .sentence-area { background: white; padding: 30px; border-radius: 15px; width: 90%; max-width: 400px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); text-align: center; min-height: 150px; display: flex; flex-direction: column; justify-content: center; }
+        .sentence-text { font-size: 18px; line-height: 1.6; margin-bottom: 20px; }
+        .gap { display: inline-block; min-width: 80px; border-bottom: 2px solid var(--primary); padding: 0 5px; color: var(--primary); font-weight: bold; }
+        .word-bank { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 20px; }
+        .bank-word { background: white; border: 2px solid var(--primary); padding: 8px 15px; border-radius: 10px; cursor: pointer; color: var(--primary); font-weight: bold; }
+        .type-input { border: none; border-bottom: 2px solid var(--primary); font-size: 18px; text-align: center; width: 120px; outline: none; color: var(--primary); }
+
+        /* GENERAL UI */
         .controls { display: flex; gap: 8px; justify-content: center; width: 100%; max-width: 420px; }
         .btn { flex: 1; padding: 12px 5px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; color: white; font-size: 13px; }
         .btn-next { background: var(--primary); }
         .btn-master { background: var(--success); }
         .btn-shuffle { background: var(--secondary); }
-        .btn-reset { background: transparent; color: #999; font-size: 11px; margin-top: 10px; text-decoration: underline; cursor: pointer; border:none; }
-
-        /* MATCHING GRID */
+        
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; max-width: 500px; width: 100%; }
-        .tile { padding: 12px; background: white; border: 2px solid #ddd; border-radius: 8px; cursor: pointer; text-align: center; font-size: 13px; min-height: 70px; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
-        .tile.selected { border-color: var(--primary); background: #e7f1ff; }
+        .tile { padding: 12px; background: white; border: 2px solid #ddd; border-radius: 8px; cursor: pointer; text-align: center; font-size: 13px; min-height: 70px; display: flex; align-items: center; justify-content: center; }
         .tile.matched { opacity: 0; pointer-events: none; }
-
-        #success-overlay {
-            position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(40,167,69,0.95);
-            color: white; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 2000; text-align:center;
-        }
+        #success-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(40,167,69,0.95); color: white; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 2000; text-align:center; }
     </style>
 </head>
 <body>
 
-   <div id="login-overlay">
-    <div class="login-box">
-        <h2>Student Login</h2>
-        <input type="text" id="login-id" placeholder="Enter Name" onkeydown="if(event.key === 'Enter') handleLogin()">
-        <button class="btn btn-next" style="width:100%" onclick="handleLogin()">Start Learning</button>
-        <p id="login-error" style="color:red; font-size:12px; margin-top:10px;" class="hidden">Name not in database.</p>
+    <div id="login-overlay">
+        <div class="login-box">
+            <h2>Student Login</h2>
+            <input type="text" id="login-id" placeholder="Enter Name" onkeydown="if(event.key === 'Enter') handleLogin()">
+            <button class="btn btn-next" style="width:100%" onclick="handleLogin()">Start Learning</button>
+            <p id="login-error" style="color:red; font-size:12px; margin-top:10px;" class="hidden">Name not in database.</p>
+        </div>
     </div>
-</div>
 
     <div id="success-overlay" class="hidden">
         <h1>🎉 Excellent!</h1>
-        <p>You matched all current words!</p>
-        <button class="btn" style="background: white; color: var(--success); width: 180px;" onclick="closeSuccess()">Play Again</button>
+        <p id="success-msg">Task Complete!</p>
+        <button class="btn" style="background: white; color: var(--success); width: 180px;" onclick="closeSuccess()">Next Word</button>
     </div>
 
     <div class="setup-area">
         <h3 id="display-name" style="margin:0">Welcome</h3>
         <select id="lesson-select" onchange="changeLesson(this.value)"></select>
-        <div id="progress-stats" class="stats-text">Words left: 0</div>
-        <button class="btn-reset" onclick="resetMastery()">Reset Mastered Words 🔄</button>
+        <div id="progress-stats" style="font-size:12px; color:#666; margin-top:5px; font-weight:bold;">Words left: 0</div>
     </div>
 
     <div class="nav">
-        <button id="btn-flash" class="active" onclick="showMode('flash')">Flashcards</button>
-        <button id="btn-match" onclick="showMode('match')">Matching</button>
+        <button id="nav-flash" class="active" onclick="showMode('flash')">Cards</button>
+        <button id="nav-match" onclick="showMode('match')">Matching</button>
+        <button id="nav-drag" onclick="showMode('drag')">Drag & Fill</button>
+        <button id="nav-type" onclick="showMode('type')">Type & Fill</button>
     </div>
 
-    <div id="flash-mode">
+    <div id="flash-mode" class="mode-container">
         <div class="card-container" onclick="flipCard()">
             <div class="card-inner" id="flashcard">
-                <div class="card-front">
-                    <span id="word-display">Word</span>
-                    <button class="speaker-btn" onclick="speakWord(event)">🔊</button>
-                </div>
+                <div class="card-front"><span id="word-display">Word</span><button style="background:none; border:none; cursor:pointer; font-size:20px;" onclick="speakWord(event)">🔊</button></div>
                 <div class="card-back" id="definition-display">Definition</div>
             </div>
         </div>
@@ -107,14 +95,27 @@
         </div>
     </div>
 
-    <div id="match-mode" class="hidden">
+    <div id="sentence-mode" class="mode-container hidden">
+        <div class="sentence-area">
+            <div id="sentence-display" class="sentence-text"></div>
+            <div id="drag-bank" class="word-bank hidden"></div>
+            <div id="type-area" class="hidden">
+                <input type="text" id="blank-input" class="type-input" placeholder="..." onkeydown="if(event.key === 'Enter') checkTypeAnswer()">
+                <button class="btn btn-next" style="margin-top:15px; width:100px" onclick="checkTypeAnswer()">Check</button>
+            </div>
+        </div>
+        <div class="controls" style="margin-top:20px">
+            <button class="btn btn-shuffle" style="max-width:100px" onclick="nextWord()">Skip</button>
+        </div>
+    </div>
+
+    <div id="match-mode" class="mode-container hidden">
         <div class="grid" id="game-grid"></div>
         <button class="btn btn-shuffle" style="margin-top:15px; width:100%; max-width:400px;" onclick="setupMatchingGame()">New Game 🔄</button>
     </div>
 
     <script>
         // --- 1. STUDENT DATABASE ---
-        // !!! PASTE YOUR RECENT STUDENT LIST AND LINKS HERE !!!
         const studentDatabase = {
             "john": "https://docs.google.com/spreadsheets/d/e/2PACX-1vS--AB3xRXgEY6Pw6_KCz43YUo2cbBZskowBoUNZ7ruPS9N2dAT-4fvDaJPYGllWWNjSSfMZ4VspCGU/pub?output=csv",
             "vlada": "https://docs.google.com/spreadsheets/d/e/2PACX-1vS--AB3xRXgEY6Pw6_KCz43YUo2cbBZskowBoUNZ7ruPS9N2dAT-4fvDaJPYGllWWNjSSfMZ4VspCGU/pub?gid=997411355&single=true&output=csv",
@@ -127,14 +128,9 @@
              "denis": "https://docs.google.com/spreadsheets/d/e/2PACX-1vS--AB3xRXgEY6Pw6_KCz43YUo2cbBZskowBoUNZ7ruPS9N2dAT-4fvDaJPYGllWWNjSSfMZ4VspCGU/pub?gid=1489062981&single=true&output=csv",
         };
 
-        let rawData = {}; 
-        let currentLessonName = "";
-        let currentIndex = 0;
-        let activeStudent = "";
-        let masteredList = [];
-        let selectedTile = null;
+        let rawData = {}; let activeStudent = ""; let currentLessonName = ""; 
+        let currentIndex = 0; let masteredList = []; let currentMode = "flash";
 
-        // --- 2. LOGIN & STORAGE ---
         function handleLogin() {
             const id = document.getElementById('login-id').value.toLowerCase().trim();
             if (studentDatabase[id]) {
@@ -143,15 +139,12 @@
                 const saved = localStorage.getItem('mastered_' + activeStudent);
                 masteredList = saved ? JSON.parse(saved) : [];
                 init();
-            } else {
-                document.getElementById('login-error').classList.remove('hidden');
-            }
+            } else { document.getElementById('login-error').classList.remove('hidden'); }
         }
 
         async function init() {
             const sheetURL = studentDatabase[activeStudent];
-            document.getElementById('display-name').innerText = "Hello, " + activeStudent.charAt(0).toUpperCase() + activeStudent.slice(1);
-            
+            document.getElementById('display-name').innerText = "Student: " + activeStudent.toUpperCase();
             try {
                 const res = await fetch(sheetURL);
                 const text = await res.text();
@@ -164,167 +157,146 @@
                         const term = cols[0].replace(/"/g, "").trim();
                         const def = cols[1].replace(/"/g, "").trim();
                         const cat = (cols[2] && cols[2].trim() !== "") ? cols[2].replace(/"/g, "").trim() : "General";
+                        const sent = (cols[3] && cols[3].trim() !== "") ? cols[3].replace(/"/g, "").trim() : "";
                         if (!rawData[cat]) rawData[cat] = [];
-                        rawData[cat].push({ term, def });
+                        rawData[cat].push({ term, def, sent });
                     }
                 });
                 populateDropdown();
-            } catch (e) { alert("Error loading data from Google."); }
+            } catch (e) { alert("Error loading CSV."); }
         }
 
-        // --- 3. FILTERING & SHUFFLE ---
         function getWordsToStudy() {
             if (!rawData[currentLessonName]) return [];
             return rawData[currentLessonName].filter(item => !masteredList.includes(item.term));
         }
 
-        function shuffleCurrentLesson() {
-            if (!rawData[currentLessonName]) return;
-            // Shuffling the source for this session
-            rawData[currentLessonName].sort(() => Math.random() - 0.5);
-            currentIndex = 0;
-            updateFlashcard();
-        }
-
-        function markAsMastered() {
-            const words = getWordsToStudy();
-            if (words.length === 0) return;
-            const word = words[currentIndex % words.length].term;
-            masteredList.push(word);
-            localStorage.setItem('mastered_' + activeStudent, JSON.stringify(masteredList));
-            updateStats();
-            nextWord();
-        }
-
-        function resetMastery() {
-            if (confirm("Reset all progress for " + activeStudent + "?")) {
-                masteredList = [];
-                localStorage.removeItem('mastered_' + activeStudent);
-                updateStats();
-                updateFlashcard();
-            }
-        }
-
-        function updateStats() {
-            const left = getWordsToStudy().length;
-            document.getElementById('progress-stats').innerText = `Words left in this lesson: ${left}`;
-        }
-
-        // --- 4. NAVIGATION ---
-        function populateDropdown() {
-            const select = document.getElementById('lesson-select');
-            select.innerHTML = "";
-            const keys = Object.keys(rawData);
-            keys.forEach(name => {
-                const opt = document.createElement('option');
-                opt.value = name; opt.innerText = name;
-                select.appendChild(opt);
-            });
-            if (keys.length > 0) changeLesson(keys[0]);
-        }
-
-        function changeLesson(name) {
-            currentLessonName = name;
-            currentIndex = 0;
-            updateStats();
-            updateFlashcard();
-            if (!document.getElementById('match-mode').classList.contains('hidden')) setupMatchingGame();
-        }
-
-        function updateFlashcard() {
-            const words = getWordsToStudy();
-            document.getElementById('flashcard').classList.remove('is-flipped');
-            setTimeout(() => {
-                if (words.length > 0) {
-                    const item = words[currentIndex % words.length];
-                    document.getElementById('word-display').innerText = item.term;
-                    document.getElementById('definition-display').innerText = item.def;
-                } else {
-                    document.getElementById('word-display').innerText = "All Mastered! 🏆";
-                    document.getElementById('definition-display').innerText = "Try another lesson or reset.";
-                }
-            }, 200);
-        }
-
-        function nextWord() {
-            const words = getWordsToStudy();
-            if (words.length > 0) currentIndex = (currentIndex + 1) % words.length;
-            updateFlashcard();
-        }
-
-        // --- 5. AUDIO & MODES ---
-        function speakWord(event) {
-            event.stopPropagation();
-            const word = document.getElementById('word-display').innerText;
-            const ut = new SpeechSynthesisUtterance(word);
-            ut.lang = 'en-US';
-            window.speechSynthesis.speak(ut);
-        }
-
         function showMode(mode) {
-            document.getElementById('flash-mode').classList.toggle('hidden', mode !== 'flash');
-            document.getElementById('match-mode').classList.toggle('hidden', mode !== 'match');
-            document.getElementById('btn-flash').classList.toggle('active', mode === 'flash');
-            document.getElementById('btn-match').classList.toggle('active', mode === 'match');
-            if (mode === 'match') setupMatchingGame();
+            currentMode = mode;
+            document.querySelectorAll('.mode-container').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.nav button').forEach(el => el.classList.remove('active'));
+            document.getElementById('nav-' + (mode === 'drag' || mode === 'type' ? mode : mode)).classList.add('active');
+
+            if (mode === 'flash') document.getElementById('flash-mode').classList.remove('hidden');
+            if (mode === 'match') { document.getElementById('match-mode').classList.remove('hidden'); setupMatchingGame(); }
+            if (mode === 'drag' || mode === 'type') { document.getElementById('sentence-mode').classList.remove('hidden'); setupSentenceTask(); }
+            updateFlashcard();
         }
 
-        function flipCard() { document.getElementById('flashcard').classList.toggle('is-flipped'); }
-
-        // --- 6. MATCHING LOGIC ---
-        function setupMatchingGame() {
-            const grid = document.getElementById('game-grid');
-            grid.innerHTML = '';
-            selectedTile = null;
-            const words = getWordsToStudy();
-            const targetCount = Math.min(words.length, 6);
-            if (targetCount === 0) {
-                grid.innerHTML = "<p style='grid-column: 1/3'>No words left to match!</p>";
+        // --- SENTENCE TASK LOGIC ---
+        function setupSentenceTask() {
+            const words = getWordsToStudy().filter(w => w.sent !== "");
+            const display = document.getElementById('sentence-display');
+            const bank = document.getElementById('drag-bank');
+            const typeArea = document.getElementById('type-area');
+            
+            if (words.length === 0) {
+                display.innerText = "No sentences found for this lesson. Add some in Column D of your Google Sheet!";
+                bank.classList.add('hidden'); typeArea.classList.add('hidden');
                 return;
             }
-            let pool = [...words].sort(() => 0.5 - Math.random()).slice(0, targetCount);
+
+            const item = words[currentIndex % words.length];
+            display.innerHTML = item.sent.replace("___", "<span class='gap' id='the-gap'>?</span>");
+            
+            if (currentMode === 'drag') {
+                bank.classList.remove('hidden'); typeArea.classList.add('hidden');
+                bank.innerHTML = "";
+                // Create a small pool of options
+                let options = [item.term];
+                const others = getWordsToStudy().filter(w => w.term !== item.term).sort(() => 0.5 - Math.random()).slice(0, 2);
+                others.forEach(o => options.push(o.term));
+                options.sort(() => 0.5 - Math.random());
+                
+                options.forEach(opt => {
+                    const btn = document.createElement('div');
+                    btn.className = "bank-word";
+                    btn.innerText = opt;
+                    btn.onclick = () => {
+                        if (opt === item.term) { 
+                            document.getElementById('the-gap').innerText = opt;
+                            document.getElementById('the-gap').style.color = "var(--success)";
+                            setTimeout(() => { document.getElementById('success-overlay').classList.remove('hidden'); }, 400);
+                        } else { btn.style.borderColor = "red"; setTimeout(() => btn.style.borderColor = "var(--primary)", 500); }
+                    };
+                    bank.appendChild(btn);
+                });
+            } else {
+                bank.classList.add('hidden'); typeArea.classList.remove('hidden');
+                document.getElementById('blank-input').value = "";
+                document.getElementById('blank-input').focus();
+            }
+        }
+
+        function checkTypeAnswer() {
+            const words = getWordsToStudy().filter(w => w.sent !== "");
+            const item = words[currentIndex % words.length];
+            const val = document.getElementById('blank-input').value.trim().toLowerCase();
+            if (val === item.term.toLowerCase()) {
+                document.getElementById('the-gap').innerText = item.term;
+                document.getElementById('success-overlay').classList.remove('hidden');
+            } else {
+                document.getElementById('blank-input').style.backgroundColor = "#ffcccc";
+                setTimeout(() => document.getElementById('blank-input').style.backgroundColor = "white", 500);
+            }
+        }
+
+        // --- SHARED FUNCTIONS ---
+        function changeLesson(name) { currentLessonName = name; currentIndex = 0; updateStats(); showMode(currentMode); }
+        function populateDropdown() {
+            const s = document.getElementById('lesson-select'); s.innerHTML = "";
+            Object.keys(rawData).forEach(k => { const o = document.createElement('option'); o.value = k; o.innerText = k; s.appendChild(o); });
+            changeLesson(Object.keys(rawData)[0]);
+        }
+        function updateStats() { document.getElementById('progress-stats').innerText = `Words left: ${getWordsToStudy().length}`; }
+        function nextWord() { const w = getWordsToStudy(); if (w.length > 0) currentIndex = (currentIndex + 1) % w.length; updateFlashcard(); if (currentMode !== 'flash' && currentMode !== 'match') setupSentenceTask(); }
+        function updateFlashcard() {
+            const w = getWordsToStudy(); document.getElementById('flashcard').classList.remove('is-flipped');
+            setTimeout(() => {
+                if (w.length > 0) {
+                    document.getElementById('word-display').innerText = w[currentIndex % w.length].term;
+                    document.getElementById('definition-display').innerText = w[currentIndex % w.length].def;
+                } else { document.getElementById('word-display').innerText = "All Mastered! 🏆"; }
+            }, 200);
+        }
+        function markAsMastered() {
+            const w = getWordsToStudy(); if (w.length === 0) return;
+            masteredList.push(w[currentIndex % w.length].term);
+            localStorage.setItem('mastered_' + activeStudent, JSON.stringify(masteredList));
+            updateStats(); nextWord();
+        }
+        function speakWord(e) { e.stopPropagation(); const ut = new SpeechSynthesisUtterance(document.getElementById('word-display').innerText); window.speechSynthesis.speak(ut); }
+        function closeSuccess() { document.getElementById('success-overlay').classList.add('hidden'); nextWord(); }
+        function flipCard() { document.getElementById('flashcard').classList.toggle('is-flipped'); }
+        function shuffleCurrentLesson() { rawData[currentLessonName].sort(() => Math.random() - 0.5); currentIndex = 0; updateFlashcard(); }
+
+        // MATCHING GAME
+        function setupMatchingGame() {
+            const grid = document.getElementById('game-grid'); grid.innerHTML = '';
+            const words = getWordsToStudy(); const target = Math.min(words.length, 6);
+            if (target === 0) { grid.innerHTML = "<p>Lesson complete!</p>"; return; }
+            let pool = [...words].sort(() => 0.5 - Math.random()).slice(0, target);
             let tiles = [];
-            pool.forEach((item, i) => {
-                tiles.push({ text: item.term, id: i, type: 't' });
-                tiles.push({ text: item.def, id: i, type: 'd' });
-            });
+            pool.forEach((item, i) => { tiles.push({ text: item.term, id: i, type: 't' }); tiles.push({ text: item.def, id: i, type: 'd' }); });
             tiles.sort(() => 0.5 - Math.random());
-            let matchedInSession = 0;
+            let matches = 0; let selected = null;
             tiles.forEach(data => {
-                const div = document.createElement('div');
-                div.className = 'tile';
-                div.innerText = data.text;
+                const div = document.createElement('div'); div.className = 'tile'; div.innerText = data.text;
                 div.onclick = () => {
                     if (div.classList.contains('matched')) return;
-                    if (!selectedTile) {
-                        selectedTile = { div, data };
-                        div.classList.add('selected');
-                    } else {
-                        if (selectedTile.div === div) {
-                            div.classList.remove('selected');
-                            selectedTile = null;
-                            return;
-                        }
-                        if (selectedTile.data.id === data.id && selectedTile.data.type !== data.type) {
-                            div.classList.add('matched');
-                            selectedTile.div.classList.add('matched');
-                            matchedInSession++;
-                            if (matchedInSession === targetCount) {
-                                setTimeout(() => { document.getElementById('success-overlay').classList.remove('hidden'); }, 500);
-                            }
-                        } else { selectedTile.div.classList.remove('selected'); }
-                        selectedTile = null;
+                    if (!selected) { selected = { div, data }; div.style.borderColor = "var(--primary)"; }
+                    else {
+                        if (selected.data.id === data.id && selected.data.type !== data.type) {
+                            div.classList.add('matched'); selected.div.classList.add('matched'); matches++;
+                            if (matches === target) { document.getElementById('success-overlay').classList.remove('hidden'); }
+                        } else { selected.div.style.borderColor = "#ddd"; }
+                        selected = null;
                     }
                 };
                 grid.appendChild(div);
             });
         }
-
-        function closeSuccess() {
-            document.getElementById('success-overlay').classList.add('hidden');
-            setupMatchingGame();
-        }
-
+        
         window.onload = function() {
             const params = new URLSearchParams(window.location.search);
             const user = params.get('user');
